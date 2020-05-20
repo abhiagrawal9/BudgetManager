@@ -83,6 +83,19 @@ let UIController = (function () {
             // Insert the HTML into DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
+        clearFields: function () {
+            let fields, fieldsArray;
+
+            // using querySelectorAll method which returns a list
+            fields = document.querySelectorAll(DOMstrings.inputDescription + ',' + DOMstrings.inputValue);
+            // converting list to an Array
+            fieldsArray = Array.prototype.slice.call(fields);
+            // Looping through an array using for-each method
+            fieldsArray.forEach(function (cuurentValue, index, entireArray) {
+                cuurentValue.value = '';
+            });
+            fieldsArray[0].focus();
+        },
         getDOMstrings: function () {
             return DOMstrings;
         }
@@ -113,6 +126,8 @@ let controller = (function (bugdetCont, UICont) {
         newItem = bugdetCont.addItem(input.type, input.description, input.value);
         // Add the item to the UI
         UICont.addListItem(newItem, input.type);
+        // Clear the fields
+        UICont.clearFields();
         // calculate budget
         // update the budget UI
     };
