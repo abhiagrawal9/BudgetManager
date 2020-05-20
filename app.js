@@ -63,7 +63,7 @@ let UIController = (function () {
             return {
                 type: document.querySelector(DOMstrings.inputType).value, // will be either inc or exp
                 description: document.querySelector(DOMstrings.inputDescription).value,
-                value: document.querySelector(DOMstrings.inputValue).value
+                value: Number.parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };
         },
         addListItem: function (obj,type) {
@@ -122,16 +122,25 @@ let controller = (function (bugdetCont, UICont) {
         let input, newItem;
         // get the fields input data
         input = UICont.getInput();
-        // add data to data structure
-        newItem = bugdetCont.addItem(input.type, input.description, input.value);
-        // Add the item to the UI
-        UICont.addListItem(newItem, input.type);
-        // Clear the fields
-        UICont.clearFields();
-        // calculate budget
-        // update the budget UI
+        // add data to data structure only if description & number are valid
+        if (input.description !== '' && !isNaN(input.value) && input.value > 0) {
+            newItem = bugdetCont.addItem(input.type, input.description, input.value);
+            // Add the item to the UI
+            UICont.addListItem(newItem, input.type);
+            // Clear the fields
+            UICont.clearFields();
+            // CAalculate and update budget
+            updateBudget();
+        }
     };
 
+    let updateBudget = function () {
+        // calculate budget
+
+        // return the budget
+
+        // update the budget UI
+    };
     return {
         init: function () {
             setUpEventListeners();
