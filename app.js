@@ -1,6 +1,51 @@
 // Budget Controller
 let bugdetController = (function () {
+        
+    let Expense = function (id, description, value) {
+        this.id = id;
+        this.description = description;
+        this.value = value;
+    };
+    let Income = function (id, description, value) {
+        this.id = id;
+        this.description = description;
+        this.value = value;
+    };
+
+    let data = {
+        allItems: {
+            exp: [],
+            inc: []
+        },
+        totals: {
+            exp: 0,
+            inc: 0
+        }
+    };
     
+    return {
+        addItem: function (type, description, value) {
+            let newItem, ID;
+            // Create new id
+            if (data.allItems[type].length > 0) {
+                ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
+            } else {
+                ID = 0;
+            }
+            // Create new item of inc or exp type
+            if (type === 'exp') {
+                newItem = new Expense(ID, description, value);
+            } else if (type === 'inc') {
+                newItem = new Income(ID, description, value);
+            }
+            // Push it into our data strucutre
+            data.allItems[type].push(newItem);
+            // return the added new item
+            return newItem;
+        }
+    }
+
+
 })();
 
 // UI Controller
@@ -40,12 +85,14 @@ let controller = (function (bugdetCont, UICont) {
                 ctrlAddItem();
             }
         });
-    }
+    };
 
     let ctrlAddItem = function () {
+        let input, newItem;
         // get the fields input data
-        let input = UICont.getInput();
+        input = UICont.getInput();
         // add data to data structure
+        newItem = bugdetCont.addItem(input.type, input.description, input.value);
         // update the list UI
         // calculate budget
         // update the budget UI
