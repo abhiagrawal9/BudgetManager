@@ -1,16 +1,26 @@
 // Budget Controller
 let bugdetController = (function () {
-        
+    // Expense function constructor
     let Expense = function (id, description, value) {
         this.id = id;
         this.description = description;
         this.value = value;
     };
+    // Income function constructor
     let Income = function (id, description, value) {
         this.id = id;
         this.description = description;
         this.value = value;
     };
+    // Calculate the total of all incomes or expenses
+    let calculateTotal = function (type) {
+        let sum = 0;
+        data.allItems[type].forEach(function (current) {
+            sum += current.value;
+        });
+        data.totals[type] = sum;
+    };
+    // data structure to store the data
     let data = {
         allItems: {
             exp: [],
@@ -19,9 +29,11 @@ let bugdetController = (function () {
         totals: {
             exp: 0,
             inc: 0
-        }
+        },
+        budget: 0,
+        percentage: -1
     };
-    
+
     return {
         addItem: function (type, description, value) {
             let newItem, ID;
@@ -41,21 +53,46 @@ let bugdetController = (function () {
             data.allItems[type].push(newItem);
             // return the added new item
             return newItem;
+        },
+        calculateBudget: function () {
+            // calculate total income and expenses
+            calculateTotal('exp');
+            calculateTotal('inc');
+            // calculate total budget (total income - total expenses)
+            data.budget = Math.round(data.totals.inc - data.totals.exp);
+            // calculate the percentage of income we spent
+            if (data.totals.inc > 0) {
+                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            } else {
+                data.percentage = -1;
+            }
+            
+        },
+        getBudget: function() {
+            return {
+                budget: data.budget,
+                totalIncome: data.totals.inc,
+                totalExpenses: data.totals.exp,
+                percentage: data.percentage
+            };
         }
     }
-
-
 })();
 
 // UI Controller
 let UIController = (function () {
+    // Object to store all dom locators
     let DOMstrings = {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value',
         addButton: '.add__btn',
         incomeContainer: '.income__list',
-        expensesContainer:'.expenses__list'
+        expensesContainer: '.expenses__list',
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expenseLabel: '.budget__expenses--value',
+        percentageLable:'.budget__expenses--percentage'
     };
 
     return {
@@ -66,7 +103,7 @@ let UIController = (function () {
                 value: Number.parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };
         },
-        addListItem: function (obj,type) {
+        addListItem: function (obj, type) {
             let html, newHtml, element;
             // Create HTMl strings with placeholders text
             if (type === 'inc') {
@@ -85,16 +122,25 @@ let UIController = (function () {
         },
         clearFields: function () {
             let fields, fieldsArray;
-
             // using querySelectorAll method which returns a list
             fields = document.querySelectorAll(DOMstrings.inputDescription + ',' + DOMstrings.inputValue);
             // converting list to an Array
             fieldsArray = Array.prototype.slice.call(fields);
             // Looping through an array using for-each method
-            fieldsArray.forEach(function (cuurentValue, index, entireArray) {
-                cuurentValue.value = '';
+            fieldsArray.forEach(function (currentValue, index, entireArray) {
+                currentValue.value = '';
             });
             fieldsArray[0].focus();
+        },
+        displayBudget: function(obj) {
+            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalIncome;
+            document.querySelector(DOMstrings.expenseLabel).textContent = obj.totalExpenses;
+            if (obj.percentage > 0) {
+                document.querySelector(DOMstrings.percentageLable).textContent = obj.percentage+'%';    
+            } else {
+                document.querySelector(DOMstrings.percentageLable).textContent = '---';    
+            }
         },
         getDOMstrings: function () {
             return DOMstrings;
@@ -104,7 +150,7 @@ let UIController = (function () {
 
 // Global App Controller
 let controller = (function (bugdetCont, UICont) {
-    
+    // function to set up all the event listeners
     let setUpEventListeners = function () {
         // to get the dom strings object from ui controller
         let DOM = UICont.getDOMstrings();
@@ -117,7 +163,7 @@ let controller = (function (bugdetCont, UICont) {
             }
         });
     };
-
+    // function to add the item and update the budget
     let ctrlAddItem = function () {
         let input, newItem;
         // get the fields input data
@@ -129,25 +175,32 @@ let controller = (function (bugdetCont, UICont) {
             UICont.addListItem(newItem, input.type);
             // Clear the fields
             UICont.clearFields();
-            // CAalculate and update budget
+            // Calculate and update budget
             updateBudget();
         }
     };
-
+    // function to calculate and update the budget
     let updateBudget = function () {
         // calculate budget
-
+        bugdetCont.calculateBudget();
         // return the budget
-
+        let budget = bugdetCont.getBudget();
         // update the budget UI
+        UICont.displayBudget(budget);
     };
     return {
         init: function () {
+            UICont.displayBudget({
+                budget: 0,
+                totalIncome: 0,
+                totalExpenses: 0,
+                percentage: -1
+            });
             setUpEventListeners();
         }
 
     }
-
 })(bugdetController, UIController);
 
+//Initialize the app controller
 controller.init();
