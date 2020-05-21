@@ -92,7 +92,8 @@ let UIController = (function () {
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expenseLabel: '.budget__expenses--value',
-        percentageLable:'.budget__expenses--percentage'
+        percentageLable: '.budget__expenses--percentage',
+        container:'.container'
     };
 
     return {
@@ -108,10 +109,10 @@ let UIController = (function () {
             // Create HTMl strings with placeholders text
             if (type === 'inc') {
                 element = DOMstrings.incomeContainer;
-                html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             } else if (type === 'exp') {
                 element = DOMstrings.expensesContainer;
-                html = '<div class="item clearfix" id = "expense-%id%" ><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+                html = '<div class="item clearfix" id = "exp-%id%" ><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
             // Replace the placehoder text with actual data
             newHtml = html.replace('%id%', obj.id);
@@ -162,6 +163,7 @@ let controller = (function (bugdetCont, UICont) {
                 ctrlAddItem();
             }
         });
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
     };
     // function to add the item and update the budget
     let ctrlAddItem = function () {
@@ -179,6 +181,22 @@ let controller = (function (bugdetCont, UICont) {
             updateBudget();
         }
     };
+    // function to delete an item and update the budget
+    let ctrlDeleteItem = function (event) {
+        let itemID, splitID, type, ID;
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        if (itemID) {
+            console.log(itemID);
+            //inc-1
+            splitID = itemID.split('-');
+            type = splitID[0];
+            ID = splitID[1];
+        }
+        // Delete the data from data structure
+        // Delete the item from UI
+        // Recalculate the budget
+        // Update the budget UI
+    };
     // function to calculate and update the budget
     let updateBudget = function () {
         // calculate budget
@@ -187,14 +205,6 @@ let controller = (function (bugdetCont, UICont) {
         let budget = bugdetCont.getBudget();
         // update the budget UI
         UICont.displayBudget(budget);
-    };
-    // function to delete an item and update the budget
-    let ctrlDeleteItem = function() {
-        // Add event handler
-        // Delete the data from data structure
-        // Delete the item from UI
-        // Recalculate the budget
-        // Update the budget UI
     };
     return {
         init: function () {
