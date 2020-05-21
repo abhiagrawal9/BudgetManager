@@ -135,6 +135,10 @@ let UIController = (function () {
             // Insert the HTML into DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
+        deleteListItem: function (selectorID) { 
+            let element = document.getElementById(selectorID);
+            element.parentNode.removeChild(element);
+        },
         clearFields: function () {
             let fields, fieldsArray;
             // using querySelectorAll method which returns a list
@@ -208,8 +212,9 @@ let controller = (function (bugdetCont, UICont) {
         // Delete the data from data structure
         bugdetCont.deleteItem(type, ID);
         // Delete the item from UI
-        // Recalculate the budget
-        // Update the budget UI
+        UICont.deleteListItem(itemID);
+        // Recalculate & Update the budget UI
+        updateBudget();
     };
     // function to calculate and update the budget
     let updateBudget = function () {
