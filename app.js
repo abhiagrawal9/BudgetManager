@@ -54,6 +54,17 @@ let bugdetController = (function () {
             // return the added new item
             return newItem;
         },
+        deleteItem: function (type,id) {
+            let idsArray, index;
+            // returns an array of same length with value of ids as implemented below
+            idsArray = data.allItems[type].map(function (currentObject, index, entireArray) {
+                return currentObject.id; 
+            });
+            index = idsArray.indexOf(id);
+            if (index !== -1) {
+                data.allItems[type].splice(index, 1); // splice(Postion at we want to delete, how many elements)
+            }
+        },
         calculateBudget: function () {
             // calculate total income and expenses
             calculateTotal('exp');
@@ -75,6 +86,9 @@ let bugdetController = (function () {
                 totalExpenses: data.totals.exp,
                 percentage: data.percentage
             };
+        },
+        testing: function () {
+            console.log(data);
         }
     }
 })();
@@ -186,13 +200,13 @@ let controller = (function (bugdetCont, UICont) {
         let itemID, splitID, type, ID;
         itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
         if (itemID) {
-            console.log(itemID);
             //inc-1
             splitID = itemID.split('-');
             type = splitID[0];
-            ID = splitID[1];
+            ID = parseInt(splitID[1]);
         }
         // Delete the data from data structure
+        bugdetCont.deleteItem(type, ID);
         // Delete the item from UI
         // Recalculate the budget
         // Update the budget UI
