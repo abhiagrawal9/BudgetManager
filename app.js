@@ -188,6 +188,14 @@ let controller = (function (bugdetCont, UICont) {
         // update the budget UI
         UICont.displayBudget(budget);
     };
+    // function to delete an item and update the budget
+    let ctrlDeleteItem = function() {
+        // Add event handler
+        // Delete the data from data structure
+        // Delete the item from UI
+        // Recalculate the budget
+        // Update the budget UI
+    };
     return {
         init: function () {
             UICont.displayBudget({
