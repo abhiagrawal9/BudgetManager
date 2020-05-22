@@ -130,7 +130,8 @@ let UIController = (function () {
         incomeLabel: '.budget__income--value',
         expenseLabel: '.budget__expenses--value',
         percentageLable: '.budget__expenses--percentage',
-        container: '.container'
+        container: '.container',
+        expensePercentageLabel:'.item__percentage'
     };
 
     return {
@@ -183,6 +184,22 @@ let UIController = (function () {
             } else {
                 document.querySelector(DOMstrings.percentageLable).textContent = '---';
             }
+        },
+        displayPercentage: function (percentages) {
+            let fields;
+            fields = document.querySelectorAll(DOMstrings.expensePercentageLabel); // returns a node list
+
+            // for loop over node list , we need a for each function as created below
+
+            let nodeListForEach = function (nodeList, callback) {
+                for (let i = 0; i < nodeList.length; i++) {
+                    callback(nodeList[i], i);
+                }
+            };
+            nodeListForEach(fields, function () {
+                // Do stuff
+            });
+            
         },
         getDOMstrings: function () {
             return DOMstrings;
