@@ -1,32 +1,34 @@
+'use strict';
+
 // Budget Controller
-let bugdetController = (function () {
+let bugdetController = (function() {
     // Expense function constructor
-    let Expense = function (id, description, value) {
+    let Expense = function(id, description, value) {
         this.id = id;
         this.description = description;
         this.value = value;
         this.percentage = -1;
     };
-    Expense.prototype.calculatePercentage = function (totalIncome) {
+    Expense.prototype.calculatePercentage = function(totalIncome) {
         if (totalIncome > 0) {
             this.percentage = Math.round((this.value / totalIncome) * 100);
         } else {
             this.percentage = -1;
         }
     };
-    Expense.prototype.getPercentage = function () {
-        return this.percentage;
-    }
-    // Income function constructor
-    let Income = function (id, description, value) {
+    Expense.prototype.getPercentage = function() {
+            return this.percentage;
+        }
+        // Income function constructor
+    let Income = function(id, description, value) {
         this.id = id;
         this.description = description;
         this.value = value;
     };
     // Calculate the total of all incomes or expenses
-    let calculateTotal = function (type) {
+    let calculateTotal = function(type) {
         let sum = 0;
-        data.allItems[type].forEach(function (current) {
+        data.allItems[type].forEach(function(current) {
             sum += current.value;
         });
         data.totals[type] = sum;
@@ -46,7 +48,7 @@ let bugdetController = (function () {
     };
 
     return {
-        addItem: function (type, description, value) {
+        addItem: function(type, description, value) {
             let newItem, ID;
             // Create new id
             if (data.allItems[type].length > 0) {
@@ -65,10 +67,10 @@ let bugdetController = (function () {
             // return the added new item
             return newItem;
         },
-        deleteItem: function (type, id) {
+        deleteItem: function(type, id) {
             let idsArray, index;
             // returns an array of same length with value of ids as implemented below
-            idsArray = data.allItems[type].map(function (currentObject, index, entireArray) {
+            idsArray = data.allItems[type].map(function(currentObject, index, entireArray) {
                 return currentObject.id;
             });
             index = idsArray.indexOf(id);
@@ -76,7 +78,7 @@ let bugdetController = (function () {
                 data.allItems[type].splice(index, 1); // splice(Postion at we want to delete, how many elements)
             }
         },
-        calculateBudget: function () {
+        calculateBudget: function() {
             // calculate total income and expenses
             calculateTotal('exp');
             calculateTotal('inc');
@@ -88,21 +90,20 @@ let bugdetController = (function () {
             } else {
                 data.percentage = -1;
             }
-
         },
-        calculatePercentages: function () {
-            data.allItems.exp.forEach(function (current) {
+        calculatePercentages: function() {
+            data.allItems.exp.forEach(function(current) {
                 current.calculatePercentage(data.totals.inc);
             });
         },
-        getPercentages: function () {
+        getPercentages: function() {
             let percentages;
-            percentages = data.allItems.exp.map(function (current) {
+            percentages = data.allItems.exp.map(function(current) {
                 return current.getPercentage();
             });
             return percentages;
         },
-        getBudget: function () {
+        getBudget: function() {
             return {
                 budget: data.budget,
                 totalIncome: data.totals.inc,
@@ -110,14 +111,11 @@ let bugdetController = (function () {
                 percentage: data.percentage
             };
         },
-        testing: function () {
-            console.log(data);
-        }
     }
 })();
 
 // UI Controller
-let UIController = (function () {
+let UIController = (function() {
     // Object to store all dom locators
     let DOMstrings = {
         inputType: '.add__type',
@@ -134,7 +132,7 @@ let UIController = (function () {
         expensePercentageLabel: '.item__percentage',
         dateLabel: '.budget__title--month'
     };
-    let formatNumber = function (num, type) {
+    let formatNumber = function(num, type) {
         let numSplit, int, dec;
         num = Math.abs(num);
         num = num.toFixed(2);
@@ -146,20 +144,22 @@ let UIController = (function () {
         dec = numSplit[1];
         return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
     };
-    let nodeListForEach = function (nodeList, callback) {
+    // custom for-each function for loop over node list
+    let nodeListForEach = function(nodeList, callback) {
         for (let i = 0; i < nodeList.length; i++) {
             callback(nodeList[i], i);
         }
     };
+
     return {
-        getInput: function () {
+        getInput: function() {
             return {
                 type: document.querySelector(DOMstrings.inputType).value, // will be either inc or exp
                 description: document.querySelector(DOMstrings.inputDescription).value,
                 value: Number.parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };
         },
-        addListItem: function (obj, type) {
+        addListItem: function(obj, type) {
             let html, newHtml, element;
             // Create HTMl strings with placeholders text
             if (type === 'inc') {
@@ -176,23 +176,23 @@ let UIController = (function () {
             // Insert the HTML into DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
-        deleteListItem: function (selectorID) {
+        deleteListItem: function(selectorID) {
             let element = document.getElementById(selectorID);
             element.parentNode.removeChild(element);
         },
-        clearFields: function () {
+        clearFields: function() {
             let fields, fieldsArray;
             // using querySelectorAll method which returns a list
             fields = document.querySelectorAll(DOMstrings.inputDescription + ',' + DOMstrings.inputValue);
             // converting list to an Array
             fieldsArray = Array.prototype.slice.call(fields);
             // Looping through an array using for-each method
-            fieldsArray.forEach(function (currentValue, index, entireArray) {
+            fieldsArray.forEach(function(currentValue, index, entireArray) {
                 currentValue.value = '';
             });
             fieldsArray[0].focus();
         },
-        displayBudget: function (obj) {
+        displayBudget: function(obj) {
             let type;
             obj.budget >= 0 ? type = 'inc' : type = 'exp';
             document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type);
@@ -204,12 +204,11 @@ let UIController = (function () {
                 document.querySelector(DOMstrings.percentageLable).textContent = '---';
             }
         },
-        displayPercentage: function (percentages) {
+        displayPercentage: function(percentages) {
             let fields;
             fields = document.querySelectorAll(DOMstrings.expensePercentageLabel); // returns a node list
-
-            // for loop over node list , we need a for each function as created below
-            nodeListForEach(fields, function (current, indez) {
+            // for loop over node list
+            nodeListForEach(fields, function(current, indez) {
                 if (percentages[indez] > 0) {
                     current.textContent = percentages[indez] + '%';
                 } else {
@@ -217,7 +216,7 @@ let UIController = (function () {
                 }
             });
         },
-        displayMonth: function () {
+        displayMonth: function() {
             let now, year, month, months;
             months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             now = new Date();
@@ -225,34 +224,34 @@ let UIController = (function () {
             month = now.getMonth();
             document.querySelector(DOMstrings.dateLabel).textContent = months[month] + ' ' + year;
         },
-        changeType: function () {
+        changeType: function() {
             let fields;
             fields = document.querySelectorAll(
-                DOMstrings.inputType + ','
-                + DOMstrings.inputDescription + ','
-                + DOMstrings.inputValue);
-            
-            nodeListForEach(fields, function (current) {
+                DOMstrings.inputType + ',' +
+                DOMstrings.inputDescription + ',' +
+                DOMstrings.inputValue);
+            // nodelist for each function to loop over the fields list
+            nodeListForEach(fields, function(current) {
                 current.classList.toggle('red-focus');
             });
             document.querySelector(DOMstrings.addButton).classList.toggle('red');
         },
-        getDOMstrings: function () {
+        getDOMstrings: function() {
             return DOMstrings;
         }
     };
 })();
 
 // Global App Controller
-let controller = (function (bugdetCont, UICont) {
+let controller = (function(bugdetCont, UICont) {
     // function to set up all the event listeners
-    let setUpEventListeners = function () {
+    let setUpEventListeners = function() {
         // to get the dom strings object from ui controller
         let DOM = UICont.getDOMstrings();
         // for pressing the add + button in page
         document.querySelector(DOM.addButton).addEventListener('click', ctrlAddItem);
         // for pressing the enter key anywhere in page
-        document.addEventListener('keypress', function (event) {
+        document.addEventListener('keypress', function(event) {
             if (event.keyCode === 13 || event.which === 13) { // some browsers doesn't support keycode.
                 ctrlAddItem();
             }
@@ -261,7 +260,7 @@ let controller = (function (bugdetCont, UICont) {
         document.querySelector(DOM.inputType).addEventListener('change', UICont.changeType);
     };
     // function to add the item and update the budget
-    let ctrlAddItem = function () {
+    let ctrlAddItem = function() {
         let input, newItem;
         // get the fields input data
         input = UICont.getInput();
@@ -279,7 +278,7 @@ let controller = (function (bugdetCont, UICont) {
         }
     };
     // function to delete an item and update the budget
-    let ctrlDeleteItem = function (event) {
+    let ctrlDeleteItem = function(event) {
         let itemID, splitID, type, ID;
         itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
         if (itemID) {
@@ -298,7 +297,7 @@ let controller = (function (bugdetCont, UICont) {
         updatePercentages();
     };
     // function to calculate and update the budget
-    let updateBudget = function () {
+    let updateBudget = function() {
         // calculate budget
         bugdetCont.calculateBudget();
         // return the budget
@@ -306,7 +305,7 @@ let controller = (function (bugdetCont, UICont) {
         // update the budget UI
         UICont.displayBudget(budget);
     };
-    let updatePercentages = function () {
+    let updatePercentages = function() {
         // calculate percentages
         bugdetCont.calculatePercentages();
         // get the percentages
@@ -314,8 +313,9 @@ let controller = (function (bugdetCont, UICont) {
         // update the percentages in UI
         UICont.displayPercentage(percentages);
     };
+
     return {
-        init: function () {
+        init: function() {
             UICont.displayMonth();
             UICont.displayBudget({
                 budget: 0,
@@ -325,7 +325,6 @@ let controller = (function (bugdetCont, UICont) {
             });
             setUpEventListeners();
         }
-
     }
 })(bugdetController, UIController);
 
