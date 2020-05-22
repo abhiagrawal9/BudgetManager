@@ -190,16 +190,18 @@ let UIController = (function () {
             fields = document.querySelectorAll(DOMstrings.expensePercentageLabel); // returns a node list
 
             // for loop over node list , we need a for each function as created below
-
             let nodeListForEach = function (nodeList, callback) {
                 for (let i = 0; i < nodeList.length; i++) {
                     callback(nodeList[i], i);
                 }
             };
-            nodeListForEach(fields, function () {
-                // Do stuff
+            nodeListForEach(fields, function (current, indez) {
+                if (percentages[indez] > 0) {
+                    current.textContent = percentages[indez] + '%';
+                } else {
+                    current.textContent = '---';
+                }
             });
-            
         },
         getDOMstrings: function () {
             return DOMstrings;
@@ -274,6 +276,8 @@ let controller = (function (bugdetCont, UICont) {
         bugdetCont.calculatePercentages();
         // get the percentages
         let percentages = bugdetCont.getPercentages();
+        // update the percentages in UI
+        UICont.displayPercentage(percentages);
     };
     return {
         init: function () {
@@ -291,3 +295,5 @@ let controller = (function (bugdetCont, UICont) {
 
 //Initialize the app controller
 controller.init();
+
+
