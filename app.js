@@ -146,6 +146,11 @@ let UIController = (function () {
         dec = numSplit[1];
         return (type === 'exp' ? '-' : '+') + ' ' + int + '.' + dec;
     };
+    let nodeListForEach = function (nodeList, callback) {
+        for (let i = 0; i < nodeList.length; i++) {
+            callback(nodeList[i], i);
+        }
+    };
     return {
         getInput: function () {
             return {
@@ -204,11 +209,6 @@ let UIController = (function () {
             fields = document.querySelectorAll(DOMstrings.expensePercentageLabel); // returns a node list
 
             // for loop over node list , we need a for each function as created below
-            let nodeListForEach = function (nodeList, callback) {
-                for (let i = 0; i < nodeList.length; i++) {
-                    callback(nodeList[i], i);
-                }
-            };
             nodeListForEach(fields, function (current, indez) {
                 if (percentages[indez] > 0) {
                     current.textContent = percentages[indez] + '%';
@@ -224,6 +224,18 @@ let UIController = (function () {
             year = now.getFullYear();
             month = now.getMonth();
             document.querySelector(DOMstrings.dateLabel).textContent = months[month] + ' ' + year;
+        },
+        changeType: function () {
+            let fields;
+            fields = document.querySelectorAll(
+                DOMstrings.inputType + ','
+                + DOMstrings.inputDescription + ','
+                + DOMstrings.inputValue);
+            
+            nodeListForEach(fields, function (current) {
+                current.classList.toggle('red-focus');
+            });
+            document.querySelector(DOMstrings.addButton).classList.toggle('red');
         },
         getDOMstrings: function () {
             return DOMstrings;
@@ -246,6 +258,7 @@ let controller = (function (bugdetCont, UICont) {
             }
         });
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        document.querySelector(DOM.inputType).addEventListener('change', UICont.changeType);
     };
     // function to add the item and update the budget
     let ctrlAddItem = function () {
